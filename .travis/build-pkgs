@@ -25,7 +25,7 @@ changed_abuilds() {
 	# Get names of repo's subdirectories with modified APKBUILD,
 	# but ignore deleted ones.
 	local aports="$(git diff-tree -r --relative="$repo" --name-only --diff-filter=ACMR \
-					"$commit_ish" -- '*APKBUILD' | xargs -I% dirname % | xargs)"
+					"$commit_ish" -- '*APKBUILD' | xargs -I% dirname % | xargs | grep linux-hardened)"
 
 	# Sort abuilds by build order.
 	ap builddirs -d "$(pwd)/$repo" $aports 2>/dev/null | xargs -I% basename %
