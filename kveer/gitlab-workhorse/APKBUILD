@@ -1,0 +1,36 @@
+# Contributor: Veovis <veovis@kveer.fr>
+# Maintainer: Veovis <veovis@kveer.fr>
+pkgname=gitlab-workhorse
+pkgver=3.3.1
+pkgrel=0
+pkgdesc="Gitlab Workhorse"
+url="https://gitlab.com/gitlab-org/gitlab-workhorse.git"
+arch="all"
+license="MIT"
+#depends="boost glib gobject-introspection libevent openssl zlib"
+#depends_dev="boost-dev gobject-introspection-dev libevent-dev openssl-dev zlib-dev"
+makedepends="$depends_dev go"
+install=""
+subpackages="$pkgname-dbg"
+source="https://gitlab.com/gitlab-org/gitlab-workhorse/repository/v$pkgver/archive.tar.bz2"
+giturl="https://gitlab.com/gitlab-org/gitlab-workhorse.git"
+options="!check"
+
+builddir="$srcdir"/$pkgname-v$pkgver-92601a16679b74a275591e883b922c02296446dc
+
+build() {
+	cd "$builddir"
+
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+
+	make install PREFIX="$pkgdir/usr"
+	#install -D gitlab-workhorse "$pkgdir"/sbin
+	#install -D gitlab-zip-cat "$pkgdir"/usr/bin
+	#install -D gitlab-zip-metadata "$pkgdir"/usr/bin
+}
+
+sha512sums="d08c72e400a356092c93abc261f9043cfbb5fce176a1c96410079929109e3f9cb629ad702193575dcae3c6e3cf790e840f6ddcb16cad352081833224f198571e  archive.tar.bz2"

@@ -1,0 +1,61 @@
+# Contributor: Veovis <veovis@kveer.fr>
+# Maintainer: Veovis <veovis@kveer.fr>
+pkgname=thrift
+pkgver=0.10.0
+pkgrel=3
+pkgdesc="Apache Thrift compiler"
+url="https://git-wip-us.apache.org/repos/asf/thrift.git"
+arch="all"
+license="ASL 2.0"
+depends="boost glib gobject-introspection libevent openssl zlib"
+depends_dev="boost-dev gobject-introspection-dev libevent-dev openssl-dev zlib-dev"
+makedepends="$depends_dev autoconf glib-dev bison flex php5-dev"
+install=""
+subpackages="$pkgname-dev $pkgname-libs"
+source="http://www-eu.apache.org/dist/thrift/0.10.0/thrift-0.10.0.tar.gz"
+giturl="https://git-wip-us.apache.org/repos/asf/thrift.git"
+options="!check"
+
+_builddir="$srcdir"/thrift-$pkgver
+
+build() {
+	cd "$_builddir/lib/php/src/ext/thrift_protocol"
+	phpize5
+
+	cd "$_builddir"
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--without-pythonmake \
+		--enable-tutorial=no \
+		--with-boost \
+		--with-c_glib \
+		--with-cpp \
+		--with-libevent \
+		--with-zlib \
+		--with-php \
+		--with-php_extension \
+		--with-qt4=no \
+		--with-qt5=no \
+		--with-csharp=no \
+		--with-erlang=no \
+		--with-nodejs=no \
+		--with-lua=no \
+		--with-python=no \
+		--with-perl=no \
+		--with-dart=no \
+		--with-ruby=no \
+		--with-haskell=no \
+		--with-go=no \
+		--with-haxe=no \
+		--with-d=no \
+		|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$_builddir"
+	make install DESTDIR="$pkgdir" || return 1
+}
+sha512sums="3695cf0fb0e4080b02446ab694fb61476997d8b181942dd6fe1e3e7cf0dcf990b4184ea33f9d0bc290b96200f702cf1ac1579e36b6b5bfe9ba8914b2d2938ddc  thrift-0.10.0.tar.gz"

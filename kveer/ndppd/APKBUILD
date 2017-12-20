@@ -1,0 +1,47 @@
+# Contributor: Veovis <veovis@kveer.fr>
+# Maintainer: Veovis <veovis@kveer.fr>
+pkgname=ndppd
+pkgver=0.2.5
+pkgrel=3
+pkgdesc="ndppd - NDP Proxy Daemon"
+url="https://github.com/DanielAdolfsson/ndppd"
+arch="all"
+license="GPLv3"
+depends=""
+makedepends="linux-headers"
+install=""
+subpackages="$pkgname-dbg $pkgname-doc"
+giturl="https://github.com/DanielAdolfsson/ndppd.git"
+builddir="$srcdir/$pkgname-$pkgver"
+options="!check"
+
+source="$pkgname-$pkgver.tar.gz::https://github.com/DanielAdolfsson/ndppd/archive/0.2.5.tar.gz
+	001-strlogger-posix.patch
+	$pkgname.initd"
+
+prepare() {
+	cd "$builddir"
+
+	find . -type f -regex '.*\.\(h\|cc\)' -exec sed -i 's!sys/poll.h!poll.h!g' {} \;
+	for _i in "$srcdir"/*.patch; do
+		patch -p1 -i "$_i"
+	done
+}
+
+build() {
+	cd "$builddir"
+
+	make PREFIX=/usr all || return 1
+}
+
+package() {
+	cd "$builddir"
+
+	make PREFIX=/usr DESTDIR="$pkgdir" install || return 1
+	install -Dm644 ndppd.conf-dist "$pkgdir"/etc/ndppd.conf || return 1
+	install -Dm755 "$srcdir"/$pkgname.initd "$pkgdir"/etc/init.d/ndppd || return 1
+}
+
+sha512sums="85534594689c38c0203ad5e7c0c6373a705cbd7da7e2b0519689853a003be2fd7c953aa73529ca52d8c88bf0ce98524e39c475ea992669278090cde4a0e4ba2b  ndppd-0.2.5.tar.gz
+66649ef8a44862409d279bd6ceaa4d8f15e4ca71f340163b9ceefe098be7475852323a20a65917013033c72b9db43cb227514e779c4864c4b4eb8ccd10d9bb66  001-strlogger-posix.patch
+4fe6632c70a02bed919391ac0dffb7d2b013a387055c8b4e5bb5f93d99e69e20f1ecf26cd7f6c59c01c14d28eec0df8ee6d1e8bad6bb227644d6ce94a1132b3e  ndppd.initd"
